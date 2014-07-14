@@ -1,0 +1,14 @@
+---
+
+- name: backup now
+  command: /opt/local/bin/percona_backup.sh
+  async: 86400
+  poll: 0
+  when: backup_now
+
+- name: restore now
+  command: /opt/local/bin/percona_restore.sh "{{ backup_directory }} / {{ backup_file }}"
+  async: 86400
+  poll: 0
+  when: restore_now
+

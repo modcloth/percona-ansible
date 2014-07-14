@@ -9,4 +9,4 @@
   roles:
   - bootstrap-smartos
   - percona-smartos
-
+  - nagios-client-smartos

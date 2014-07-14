@@ -1,12 +1,24 @@
-auto_increment_increment: 1
-auto_increment_offset: 1
+# nagios
+nagios_monitoring_host: monitoring.prod.modcloth.com
+nagios_disk_warn: 85
+nagios_disk_critical: 90
+nagios_load_warn: "2.0,2.0,2.0"
+nagios_load_critical: "3.0,3.0.3.0"
+nagios_mem_warn: 95
+nagios_mem_critical: 98
+nagios_swap_warn: 70
+nagios_swap_critical: 80
 
+# backup
 backup_crontab_hour: 3
 backup_crontab_minute: 0
 backup_directory: /net/192.168.38.253/vol/joyaa436bac_2fb1_4f20_8647_39ee241c2a72_shared02/backups/percona
-backup_enabled: False
+backup_crontab_enabled: False
 backup_retention_period: 7
 
+# percona
+auto_increment_increment: 1
+auto_increment_offset: 1
 bind_address: 0.0.0.0
 binlog_format: 'ROW'
 character_set_server: utf8
@@ -16,10 +28,8 @@ event_scheduler: 'OFF'
 expire_log_days: 3
 group_concat_max_len: 1024
 innodb_buffer_pool_instances: 1
-
 innodb_buffer_pool_ratio: .70
 # innodb_buffer_pool_size: 1024
-
 innodb_flush_log_at_trx_commit: 1
 innodb_io_capacity: 1000
 innodb_lock_wait_timeout: 5

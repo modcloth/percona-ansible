@@ -4,17 +4,22 @@
   file: state=directory path=/var/run/nagios owner=nagios group=nagios mode=0755
 
 - name: ensure creation of nagios plugins directory
-  file: state=directory path=/usr/local/nagios/plugins
+  file: state=directory path=/usr/local/libexec/nagios/ mode=0755 
 
-- name: write check files
-  copy: dest="/usr/local/libexec/nagios/plugins/{{ item }}" src="files/{{ item }}" mode=0755
+- name: write weird smartos checks 
+  copy: dest="/usr/local/libexec/nagios/{{ item }}" src="{{ item }}" mode=0755
   with_items:
     - check_disk
     - check_load
     - check_mem
     - check_swap
+
 - name: write nagios config file
   template:
-    src="nagios/nrpe.cfg.j2"
+    src="nrpe.cfg.j2"
     dest="/opt/local/etc/nagios/nrpe.cfg"
     owner=nagios group=nagios mode=0644
+
+- name: restart nrpe
+  service: name=nrpe state=restarted
+

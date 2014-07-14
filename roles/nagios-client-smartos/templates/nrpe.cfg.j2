@@ -15,8 +15,8 @@ debug=0
 command_timeout=60
 connection_timeout=300
 
-command[check_disk]=/opt/local/libexec/nagios/plugins/check_disk -w {{ nagios_disk_warn }} -c {{ nagios_disk_critical }}
-command[check_load]=/opt/local/libexec/nagios/plugins/check_load -w {{ nagios_load_warn }} -c {{ nagios_load_critical }}
+command[check_disk]=/opt/local/libexec/nagios/check_disk -w {{ nagios_disk_warn }} -c {{ nagios_disk_critical }}
+command[check_load]=/opt/local/libexec/nagios/check_load -w {{ nagios_load_warn }} -c {{ nagios_load_critical }}
 command[check_mem]=/opt/local/libexec/nagios/check_mem -w {{ nagios_mem_warn }} -c {{ nagios_mem_critical }}
 command[check_swap]=/opt/local/libexec/nagios/check_swap -w {{ nagios_swap_warn }} -c {{ nagios_swap_critical }}
 

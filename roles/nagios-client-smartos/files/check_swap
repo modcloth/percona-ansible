@@ -1,0 +1,29 @@
+#!/bin/bash
+
+PATH="/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin"
+
+while getopts 'nw:c:' option; do
+  case "$option" in
+    w) WARNING=$OPTARG;;
+    c) CRITICAL=$OPTARG;;
+  esac
+done
+
+USED=`kstat -pc zone_memory_cap :::swap | awk '{print $2}'`
+CAP=`kstat -pc zone_memory_cap :::swapcap | awk '{print $2}'`
+
+PERC_USED=$(( ${USED} * 100 / ${CAP} ))
+
+if (( ${PERC_USED} >= ${CRITICAL} )); then
+  echo -n 'SWAP CRITICAL - '
+  RETURN=2
+elif (( ${PERC_USED} >= ${WARNING} )); then
+  echo -n 'SWAP WARNING - '
+  RETURN=1
+else
+  echo -n 'SWAP OK - '
+  RETURN=0
+fi
+
+echo -n "${PERC_USED}% used|used=${USED};cap=${CAP}"
+exit ${RETURN}

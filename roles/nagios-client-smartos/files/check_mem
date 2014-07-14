@@ -1,0 +1,76 @@
+#!/bin/bash
+
+PATH="/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin"
+
+function main() {
+  while getopts 'nw:c:' option; do
+    case "$option" in
+      w) WARNING=$OPTARG;;
+    c) CRITICAL=$OPTARG;;
+  esac
+  done
+
+  USED="$(kstat -pc zone_memory_cap :::rss | awk '{print $2}')"
+  CAP="$(kstat -pc zone_memory_cap :::physcap | awk '{print $2}')"
+
+  PERC_USED=$(( ${USED} * 100 / ${CAP} ))
+
+  if (( ${PERC_USED} >= ${CRITICAL} )); then
+    RETURN=2
+    validate_alert
+  elif (( ${PERC_USED} >= ${WARNING} )); then
+    RETURN=1
+    validate_alert
+  else
+    echo -n 'MEMORY OK - '
+    RETURN=0
+  fi
+
+  echo -n "${PERC_USED}% used|used=${USED};cap=${CAP}"
+  exit ${RETURN}
+}
+
+# If the quick & inaccurate check above results in either a warning alert or a
+# critical alert, validate the results using the slow & accurate check before
+# issuing the alert.  Reassigns $PERC_USED and $USED.  Reassigns $RETURN=0 if
+# the alert should not actually be issued.
+#
+# NOTE: This check is very expensive and can take up to 20 seconds.  If this
+# check gets fired frequently and performance degradation is observed, the `V`
+# arg should be removed (`prstat -Zc 0 1`).  This check will be slightly less
+# accurate, but it will still count shared memory correctly (unlike `kstat`),
+# and it will be much faster than `prstat -VZc 0 1`.
+validate_alert() {
+  RAW="$(prstat -VZc 0 1 | tail -n 2 | head -n 1 | awk '{print $4}')"
+  UNIT="$(echo "$RAW" | sed 's/[0-9]//g')"
+  NUMBER="$(echo "$RAW" | sed 's/[^0-9]//g')"
+
+  case "$UNIT" in
+    K)
+      USED="$(( $NUMBER * 1000 ))"
+      ;;
+    M)
+      USED="$(( $NUMBER * 1000000 ))"
+      ;;
+    G)
+      USED="$(( $NUMBER * 1000000000 ))"
+      ;;
+    *)
+      ;;
+  esac
+
+  PERC_USED=$(( ${USED} * 100 / ${CAP} ))
+
+  if (( ${PERC_USED} >= ${CRITICAL} )); then
+    echo -n 'MEMORY CRITICAL - '
+    # $RETURN is already set to 2
+  elif (( ${PERC_USED} >= ${WARNING} )); then
+    echo -n 'MEMORY WARNING - '
+    # $RETURN is already set to 1
+  else
+    echo -n 'MEMORY OK - '
+    RETURN=0
+  fi
+}
+
+main "$@"

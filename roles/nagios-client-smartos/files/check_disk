@@ -1,0 +1,30 @@
+#!/bin/bash
+
+PATH="/opt/local/gnu/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin"
+
+while getopts 'nw:c:' option; do
+  case "$option" in
+    w) WARNING=$OPTARG;;
+    c) CRITICAL=$OPTARG;;
+  esac
+done
+
+DATA=`df / | tail -1`
+
+CAP=`echo ${DATA} | awk '{print $2}'`
+USED=`echo ${DATA} | awk '{print $3}'`
+PERC_USED=`echo ${DATA} | awk '{print $5}' | awk -F"%" '{print $1}'`
+
+if [[ ${PERC_USED} -ge ${CRITICAL} ]]; then
+  echo -n 'DISK CRITICAL - '
+  RETURN=2
+elif [[ ${PERC_USED} -ge ${WARNING} ]]; then
+  echo -n 'DISK WARNING - '
+  RETURN=1
+else
+  echo -n 'DISK OK - '
+  RETURN=0
+fi
+
+echo -n "${PERC_USED}% used|used=${USED};cap=${CAP}"
+exit ${RETURN}

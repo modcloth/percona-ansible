@@ -1,9 +1,11 @@
 ---
 
-- name: install nagios
+- name: install nrpe
   pkgin: name=nagios-nrpe state=present
-
+  
 - name: install nagios-plugins
   pkgin: name=nagios-plugins state=present
 
+- name: install nagios-plugins-mysql
+  pkgin: name=nagios-plugin-mysql state=present
 

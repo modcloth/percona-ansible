@@ -1,0 +1,65 @@
+#!/bin/bash
+
+PATH="/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin"
+
+while getopts 'nw:c:' option; do
+  case "$option" in
+    w) WARNING=$OPTARG;;
+    c) CRITICAL=$OPTARG;;
+  esac
+done
+
+CPU=`kstat cpu_info | grep core_id | awk '{ print $2}' | uniq | wc -l`
+
+DATA=`w | head -1 | awk -F"load average:" '{print $2}' | sed -e 's/^[ \t]*//'`
+
+AVG1=`echo ${DATA} | awk -F"," '{print $1}' | sed -e 's/^[ \t]*//'`
+AVG5=`echo ${DATA} | awk -F"," '{print $2}' | sed -e 's/^[ \t]*//'`
+AVG15=`echo ${DATA} | awk -F"," '{print $3}' | sed -e 's/^[ \t]*//'`
+
+AAVG1=`printf "0%s" $(echo "scale=2; ${AVG1}/${CPU}" | bc)`
+AAVG5=`printf "0%s" $(echo "scale=2; ${AVG5}/${CPU}" | bc)`
+AAVG15=`printf "0%s" $(echo "scale=2; ${AVG5}/${CPU}" | bc)`
+
+WARN1=`echo ${WARNING} | awk -F"," '{print $1}' | sed -e 's/^[ \t]*//'`
+WARN5=`echo ${WARNING} | awk -F"," '{print $2}' | sed -e 's/^[ \t]*//'`
+WARN15=`echo ${WARNING} | awk -F"," '{print $3}' | sed -e 's/^[ \t]*//'`
+
+CRIT1=`echo ${CRITICAL} | awk -F"," '{print $1}' | sed -e 's/^[ \t]*//'`
+CRIT5=`echo ${CRITICAL} | awk -F"," '{print $2}' | sed -e 's/^[ \t]*//'`
+CRIT15=`echo ${CRITICAL} | awk -F"," '{print $3}' | sed -e 's/^[ \t]*//'`
+
+CCRIT1=$(awk 'BEGIN{ print "'${AAVG1}'">="'${CRIT1}'" }')
+CCRIT5=$(awk 'BEGIN{ print "'${AAVG5}'">="'${CRIT5}'" }')
+CCRIT15=$(awk 'BEGIN{ print "'${AAVG15}'">="'${CRIT15}'" }')
+
+CWARN1=$(awk 'BEGIN{ print "'${AAVG1}'">="'${WARN1}'" }')
+CWARN5=$(awk 'BEGIN{ print "'${AAVG5}'">="'${WARN5}'" }')
+CWARN15=$(awk 'BEGIN{ print "'${AAVG15}'">="'${WARN15}'" }')
+
+if [ ${CCRIT1} = 1 ]; then
+  echo -n 'LOAD CRITICAL - '
+  RETURN=2
+elif [ ${CCRIT5} = 1 ]; then
+  echo -n 'LOAD CRITICAL - '
+  RETURN=2
+elif [ ${CCRIT15} = 1 ]; then
+  echo -n 'LOAD CRITICAL - '
+  RETURN=2
+elif [ ${CWARN1} = 1 ]; then
+  echo -n 'LOAD WARNING - '
+  RETURN=1
+elif [ ${CWARN5} = 1 ]; then
+  echo -n 'LOAD WARNING - '
+  RETURN=1
+elif [ ${CWARN15} = 1 ]; then
+  echo -n 'LOAD WARNING - '
+  RETURN=1
+else
+  echo -n 'LOAD OK - '
+  RETURN=0
+fi
+
+echo -n "average: ${AAVG1}, ${AAVG5}, ${AAVG15}|load1=${AAVG1};load5=${AAVG5};load15=${AAVG15}"
+exit ${RETURN}
+
