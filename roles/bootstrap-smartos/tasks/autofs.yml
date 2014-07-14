@@ -1,0 +1,6 @@
+# autofs needs rpcbind and autofs services
+- name: start rpcbind
+  service: name="svc:/network/rpc/bind:default" state=started
+
+- name: start autofs
+  service: name="autofs" state=started

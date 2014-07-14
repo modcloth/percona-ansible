@@ -1,0 +1,5 @@
+# smartos bootstrap
+---
+- include: hostname.yml
+- include: keys.yml
+- include: autofs.yml

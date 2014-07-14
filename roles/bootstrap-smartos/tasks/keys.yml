@@ -1,0 +1,7 @@
+# copy keys
+- name: prepare root ssh dir (should already exist)
+  file: path=/root/.ssh state=directory owner=root group=root mode=0700
+
+- name: copy ssh keys
+  copy: src=authorized_keys dest=/root/.ssh/authorized_keys
+

@@ -1,0 +1,12 @@
+---
+- hosts: percona-mysql
+  gather_facts: True
+  tasks: 
+  - group_by: key={{ ansible_distribution }}
+  
+- hosts: SmartOS
+  gather_facts: False 
+  roles:
+  - bootstrap-smartos
+  - percona-smartos
+

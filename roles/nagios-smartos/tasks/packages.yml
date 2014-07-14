@@ -1,0 +1,9 @@
+---
+
+- name: install nagios
+  pkgin: name=nagios-nrpe state=present
+
+- name: install nagios-plugins
+  pkgin: name=nagios-plugins state=present
+
+

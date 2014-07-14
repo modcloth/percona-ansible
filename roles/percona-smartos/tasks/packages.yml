@@ -1,0 +1,10 @@
+---
+
+- name: install percona-server
+  pkgin: name=percona-server state=present
+
+- name: install percona-toolkit 
+  pkgin: name=percona-toolkit state=present
+
+- name: install percona56-xtrabackup
+  pkgin: name=percona56-xtrabackup state=present

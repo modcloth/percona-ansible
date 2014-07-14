@@ -1,0 +1,10 @@
+# hostname on smartos requires hostname exec, hosts file, nodename file
+- name: hostname
+  command: hostname {{ inventory_hostname }}
+
+- name: hosts file
+  template: src=hosts.j2 dest=/etc/hosts owner=root group=root mode=0644
+
+- name: nodename file
+  template: src=nodename.j2 dest=/etc/nodename owner=root group=root mode=0644
+
