@@ -45,7 +45,7 @@ table_definition_cache: 1024
 table_open_cache: 1024
 thread_cache: 256
 thread_stack: 128K
-tmp_dir: /var/tmp
+tmp_dir: /tmp
 tmp_table_size: 16M
 transaction_isolation: REPEATABLE-READ
 userstat: 'OFF'

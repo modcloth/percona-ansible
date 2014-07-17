@@ -1,6 +1,0 @@
----
-- include: packages.yml
-- include: configuration.yml
-- include: scripts.yml
-- include: cron.yml
-
