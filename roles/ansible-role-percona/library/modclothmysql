@@ -14,14 +14,16 @@ def generateid():
     return int(time.time()) + random.randint(0,1000)
 
 def identify():
-    config = file("/etc/my.cnf","r")
-    for line in config: 
-	match = re.match("^server-id = (\d+)\W+", line)
-	if match: 
+    try:
+       config = file("/etc/my.cnf","r")
+       for line in config: 
+          match = re.match("^server-id = (\d+)\W+", line)
+	  if match: 
 	    mid = match.group(1)
     	    if mid == "1": return generateid()
             else: return mid
-    return generateid() 
+    except:
+       return generateid() 
 
 def main():
     module = AnsibleModule(

@@ -10,7 +10,10 @@
 
 - name: copy templatized mysql configuration
   template: src=my.cnf.j2 dest=/etc/my.cnf owner=mysql group=mysql mode=0644
-  notify:
-  - restart percona
 
+- name: symlink config on solaris
+  file: dest=/opt/local/etc/my.cnf src=/etc/my.cnf state=link force=yes
+  when: ansible_os_family == "Solaris"
 
+- name: restart percona
+  service: name=percona state=restarted
